@@ -1,0 +1,103 @@
+pipeline {
+    agent any
+    // parameters {
+    //     choice(name: 'ENVIRONMENT',
+    //     choices: ['DEVELOPMENT', 'PRODUCTION'],
+    //     description: 'Choose the Environment to Work On')
+    // }
+
+    stages {
+        
+        stage('Code checkout according to environment') {
+            steps {
+                script{
+                    if(params.ENVIRONMENT=='DEVELOPMENT'){
+                        checkout scmGit(branches: [[name: '*/Dev']], extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Mini-assignment']]]], userRemoteConfigs: [[credentialsId: 'Git', url: 'https://git.nagarro.com/freshertraining2023/muskanchaurasia.git']])
+                    }
+                    else if(params.ENVIRONMENT=='PRODUCTION'){
+                        checkout scmGit(branches: [[name: '*/prod']], extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Mini-assignment']]]], userRemoteConfigs: [[credentialsId: 'Git', url: 'https://git.nagarro.com/freshertraining2023/muskanchaurasia.git']])
+                    }
+                    else{
+                        error('Invalid choice')
+                    }
+                }
+            }
+        } 
+        stage("Build the code"){
+            steps{
+                sh "mvn -f Mini-assignment/pom.xml clean package"
+            }
+            
+        }
+        
+        
+        stage("SonarQube Analysis")
+        {
+            tools
+            {
+                jdk "Java11"
+            }
+            steps
+            {
+                withSonarQubeEnv("SonarQube")
+                {
+                    sh 'mvn -f Mini-assignment/pom.xml clean install sonar:sonar -Dsonar.projectKey=Pipeline-jenkins -Dsonar.projectName=Mini-assignment'
+                }
+            }
+        }
+       
+        stage("Upload artifacts")
+        {
+            steps
+            {
+                rtUpload(
+                    serverId: 'artifactory-server',
+                    spec:'''{
+                        "files":[
+                        {
+                            "pattern": "*.war",
+                            "target": "Jenkins-pipeline-repo/"
+                        }
+                    ]
+                    }''',
+                    )
+                    rtPublishBuildInfo( serverId:"artifactory-server" )
+                    
+            }
+        }
+        
+        stage('create image for docker') {
+            steps{
+                sh 'docker build -t muskanchaurasia/mini-assignment  Mini-assignment/ '
+            }
+        }
+
+        stage('Run the container'){
+            steps{
+                script{
+                    if(params.ENVIRONMENT=='DEVELOPMENT'){
+                        def docker_container = sh(returnStdout: true, script: 'docker ps -a -f name="MiniAssignment" -q')
+                        if(docker_container)
+                            {
+                        sh "docker stop ${docker_container}"
+                        sh "docker rm --force ${docker_container}"
+                    }
+                    sh 'docker run -d --name MiniAssignment -p 8084:8080 muskanchaurasia/mini-assignment'
+                    }
+                    else if(params.ENVIRONMENT=='PRODUCTION'){
+                        def docker_container = sh(returnStdout: true, script: 'docker ps -a -f name="MiniAssignment" -q')
+                        if(docker_container)
+                            {
+                        sh "docker stop ${docker_container}"
+                        sh "docker rm --force ${docker_container}"
+                    }
+                    sh 'docker run -d --name MiniAssignment -p 9090:8080 muskanchaurasia/mini-assignment'
+                    }
+                    else{
+                        error('Kindly lookup the code')
+                    }
+            }
+        }
+    }
+}
+}
