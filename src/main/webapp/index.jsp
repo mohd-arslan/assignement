@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>Spring MVC Calculator</title></head>
+<title>Dev</title></head>
 <body>
-<h2 align="center"> Spring MVC Basic Calculator</h2>
-<br>
+<h2 align="center"> ----------------hello! I’m in dev environment -----------</h2>
+<%--<br>
 <div align="center">
 <form action="processform" method="post">
 	
@@ -19,5 +19,5 @@
     <input type="submit" name="div" value="Div">
     </form>
     </div>
-</body>
+</body>--%>
 </html>
