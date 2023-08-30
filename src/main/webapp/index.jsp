@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>Spring MVC Calculator</title></head>
+<title>Prod</title></head>
 <body>
-<h2 align="center"> Spring MVC Basic Calculator</h2>
-<br>
+<h2 align="center"> ----------------hello! I am in Prod environment -----------</h2>
+<%--<br>
 <div align="center">
 <form action="processform" method="post">
 	
@@ -18,6 +18,6 @@
     <input type="submit" name="mul" value="Mul">
     <input type="submit" name="div" value="Div">
     </form>
-    </div>
+    </div>--%>
 </body>
 </html>
