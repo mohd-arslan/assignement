@@ -18,6 +18,6 @@
     <input type="submit" name="mul" value="Mul">
     <input type="submit" name="div" value="Div">
     </form>
-    </div>
-</body>--%>
+    </div>--%>
+</body>
 </html>
