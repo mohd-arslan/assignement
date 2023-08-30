@@ -2,7 +2,7 @@
 <head>
 <title>Dev</title></head>
 <body>
-<h2 align="center"> ----------------hello! I’m in dev environment -----------</h2>
+<h2 align="center"> ----------------hello! I am in dev environment -----------</h2>
 <%--<br>
 <div align="center">
 <form action="processform" method="post">
