@@ -25,7 +25,7 @@ pipeline {
         } 
         stage("Build the code"){
             steps{
-                sh "mvn -f Mini-assignment/pom.xml clean package"
+                sh "mvn -f assignment/pom.xml clean package"
             }
             
         }
@@ -41,7 +41,7 @@ pipeline {
             {
                 withSonarQubeEnv("SonarQube")
                 {
-                    sh 'mvn -f Mini-assignment/pom.xml clean install sonar:sonar -Dsonar.projectKey=Pipeline-jenkins -Dsonar.projectName=Mini-assignment'
+                    sh 'mvn -f assignment/pom.xml clean install sonar:sonar -Dsonar.projectKey=Pipeline-jenkins -Dsonar.projectName=Mini-assignment'
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
         
         stage('create image for docker') {
             steps{
-                sh 'docker build -t muskanchaurasia/mini-assignment  Mini-assignment/ '
+                sh 'docker build -t mohdarslan/bench_assignment  Mini-assignment/ '
             }
         }
 
@@ -82,7 +82,7 @@ pipeline {
                         sh "docker stop ${docker_container}"
                         sh "docker rm --force ${docker_container}"
                     }
-                    sh 'docker run -d --name MiniAssignment -p 8084:8080 muskanchaurasia/mini-assignment'
+                    sh 'docker run -d --name MiniAssignment -p 8084:8080 mohdarslan/bench_assignment'
                     }
                     else if(params.ENVIRONMENT=='PRODUCTION'){
                         def docker_container = sh(returnStdout: true, script: 'docker ps -a -f name="MiniAssignment" -q')
@@ -91,7 +91,7 @@ pipeline {
                         sh "docker stop ${docker_container}"
                         sh "docker rm --force ${docker_container}"
                     }
-                    sh 'docker run -d --name MiniAssignment -p 9090:8080 muskanchaurasia/mini-assignment'
+                    sh 'docker run -d --name MiniAssignment -p 9090:8080 mohdarslan/bench_assignment'
                     }
                     else{
                         error('Kindly lookup the code')
